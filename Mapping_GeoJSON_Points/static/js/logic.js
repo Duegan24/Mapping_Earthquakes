@@ -32,17 +32,17 @@ L.geoJson(sanFranAirport, {
   pointToLayer: function(feature, latlng) {
     console.log(feature);
     return L.marker(latlng)
-    .bindPopup("<h2>" + feature.properties.city + "</h2>");
+    .bindPopup("<h3>" + feature.properties.city + "</h3>");
   }
 
 }).addTo(map);
 
-L.geoJson(sanFranAirport, {
-  onEachFeature: function(feature, layer) {
-    console.log(layer)
-    layer.bindPopup();
-   }
-});
+// L.geoJson(sanFranAirport, {
+//   onEachFeature: function(feature, layer) {
+//     console.log(layer);
+//     layer.bindPopup("<h3> Airport Code:  " + feature.properties.faa + "</h3><hr><h4> Airport name:  " + feature.properties.name+"</h4>");
+//    }
+// }).addTo(map);
 
 // Get data from cities.js
 let cityData = cities;
