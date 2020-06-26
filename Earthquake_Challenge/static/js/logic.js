@@ -35,6 +35,13 @@ let baseMaps = {
   Satellite: satelliteStreets
 };
 
+// Create the map object with a center and zoom level - scale is from 0-18.
+let map = L.map("mapid", {
+  center: [39.5, -98.5],
+  zoom: 3,
+  layers: [streets]
+});
+
 // Create the earthquake layer for our map.
 let earthquakes = new L.layerGroup();
 
@@ -47,13 +54,6 @@ let overlays = {
   Earthquakes: earthquakes,
   "Tectonic Plates": tectonicPlates
 };
-
-// Create the map object with a center and zoom level - scale is from 0-18.
-let map = L.map("mapid", {
-  center: [39.5, -98.5],
-  zoom: 3,
-  layers: [satelliteStreets]
-});
 
 // This function returns the style data for each of the earthquakes we plot on
 // the map. We pass the magnitude of the earthquake into two separate functions
@@ -125,10 +125,21 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
 earthquakes.addTo(map);
 
+
+// Formatting for the tectonic plate data
+function polyStyle(){
+  return {
+    opacity: 1,
+    color: "#fe0000",
+  };
+}
+
 // Retrieve the tectonic plate GeoJSON data.
-d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_plates.json").then(function(data) {
+d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json").then(function(data) {
   // Creating a GeoJSON layer with the retrieved data.
-  L.geoJson(data).addTo(tectonicPlates);
+  L.geoJson(data, {
+    style: polyStyle
+  }).addTo(tectonicPlates);
 });
 
 tectonicPlates.addTo(map);
@@ -140,18 +151,20 @@ var legend = L.control({
   position: "bottomright"
 });
 
+// Set up the constants for the legend
+const magnitudes = [0, 1, 2, 3, 4, 5];
+const colors = [
+  '#98ee00',
+  '#d4ee00',
+  '#eecc00',
+  '#ee9c00',
+  '#ea822c',
+  '#ea2c2c'
+];
+
 // Then add all the details for the legend.
 legend.onAdd = function() {
   let div = L.DomUtil.create("div", "info legend");
-  const magnitudes = [0, 1, 2, 3, 4, 5];
-  const colors = [
-    '#98ee00',
-    '#d4ee00',
-    '#eecc00',
-    '#ee9c00',
-    '#ea822c',
-    '#ea2c2c'
-  ];
 
   // Looping through our intervals to generate a label with a colored square for each interval.
   for (var i = 0; i < magnitudes.length; i++) {
@@ -164,78 +177,5 @@ legend.onAdd = function() {
 };
 
 legend.addTo(map);
-
-
-// // Drawing Polygons
-// // Accessing the Toronto neighborhoods GeoJSON URL.
-// let torontoHoods = "https://raw.githubusercontent.com/Duegan24/Mapping_Earthquakes/Mapping_GeoJSON_Polygons/torontoNeighborhoods.json";
-
-// // Grabbing our GeoJSON data.
-// d3.json(torontoHoods).then(function(data) {
-//   console.log(data);
-// // Creating a GeoJSON layer with the retrieved data.
-//   L.geoJson(data, {
-//     style: myStyle,
-//     onEachFeature: function(feature, layer) {
-//       console.log(layer);
-//       layer.bindPopup("<h3> Neighborhood:  " + feature.properties.AREA_NAME + "</h3><hr><h4> Code:  " + feature.properties.AREA_S_CD +"</h4>");
-//     }
-//   }).addTo(map);
-// });
-
-
-// // Create Lines
-// // Accessing the Toronto airline routes GeoJSON URL.
-// let torontoData = "https://raw.githubusercontent.com/Duegan24/Mapping_Earthquakes/Mapping_GeoJSON_LineStrings/torontoRoutes.json";
-
-// // Grabbing our GeoJSON data.
-// d3.json(torontoData).then(function(data) {
-//   console.log(data);
-// // Creating a GeoJSON layer with the retrieved data.
-//   L.geoJson(data, {
-//     style: myStyle,
-//     onEachFeature: function(feature, layer) {
-//       console.log(layer);
-//       layer.bindPopup("<h3> Airline:  " + feature.properties.airline + "</h3><hr><h4> Desination:  " + feature.properties.dst+"</h4>");
-//     }
-//   }).addTo(map);
-// });
-
-
-// // Mapping Points
-
-// // Accessing the airport GeoJSON URL
-// let airportData = "https://raw.githubusercontent.com/Duegan24/Mapping_Earthquakes/Mapping_GeoJSON_Points/majorAirports.json";
-
-// // Grabbing our GeoJSON data.
-// d3.json(airportData).then(function(data) {
-//   console.log(data);
-//   // Creating a GeoJSON layer with the retrieved data.
-//   L.geoJson(data, {
-//     onEachFeature: function(feature, layer) {
-//         console.log(layer);
-//         layer.bindPopup("<h3> Airport Code:  " + feature.properties.faa + "</h3><hr><h4> Airport Name:  " + feature.properties.name+"</h4>");
-//     }
-//   }).addTo(map);
-// });
-
-
-// // Create Circles
-// // Get data from cities.js
-// let cityData = cities;
-
-// // Loop through the cities array and create one marker for each city.
-// cityData.forEach(city => {
-//   console.log(city)
-//   L.circleMarker(city.location, {
-//     radius: (city.population/200000),
-//     color: 'orange',
-//     lineweight: 4,
-//   })
-//   .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")
-//   .addTo(map);
-// });
-
-
 
 
